@@ -21,6 +21,13 @@ body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;min-heig
 .search-bar{margin-bottom:16px}
 .search-bar input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #30363d;background:#161b22;color:#c9d1d9;font-size:13px;outline:none;transition:border-color .15s}
 .search-bar input:focus{border-color:#f0883e}
+.status-bar{display:flex;gap:10px;margin-bottom:12px;font-size:11px;color:#8b949e;flex-wrap:wrap}
+.status-bar span{display:flex;align-items:center;gap:4px}
+.status-bar .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.status-bar .dot.active{background:#3fb950}
+.status-bar .dot.inactive{background:#da3633}
+.status-bar .dot.checking{background:#d29922}
+.status-bar .dot.unknown{background:#30363d}
 .city-section{margin-bottom:4px;border:1px solid #21262d;border-radius:12px;overflow:hidden}
 .city-section:has(.city-body.open){border-color:#30363d}
 .city-header{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#f0f6fc;padding:10px 12px;cursor:pointer;transition:background .15s;user-select:none}
@@ -52,6 +59,7 @@ body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;min-heig
 .footer{text-align:center;padding:24px 16px 8px;font-size:12px;color:#484f58}
 .footer a{color:#484f58;text-decoration:none}
 .footer a:hover{color:#58a6ff}
+#visitorCount{color:#484f58;font-size:11px;margin-left:8px}
 
 /* Bottom player */
 .bottom-player{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid #30363d;padding:10px 16px;z-index:100;display:flex;align-items:center;gap:10px}
@@ -94,9 +102,11 @@ body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;min-heig
 <input type="text" id="searchInput" placeholder="Cari radio...">
 </div>
 
+<div class="status-bar" id="statusBar"></div>
+
 <div id="stationsContainer"></div>
 
-<div class="footer"><a href="https://github.com/budijoi/radio-stream" target="_blank">budijoi 2026</a></div>
+<div class="footer"><a href="https://github.com/budijoi/radio-stream" target="_blank">budijoi 2026</a> <span id="visitorCount"></span></div>
 </div>
 
 <div class="bottom-player" id="bottomPlayer">
@@ -371,6 +381,10 @@ for(let n=0;n<4;n++)next();
 }
 
 function renderStations(){
+const all=getAll();
+let a=0,i=0,ch=0,u=0;
+all.forEach(s=>{const st=statusMap.get(s.url);if(st==='active')a++;else if(st==='inactive')i++;else if(st==='checking')ch++;else u++});
+document.getElementById('statusBar').innerHTML=`<span><span class="dot active"></span>Aktif ${a}</span><span><span class="dot inactive"></span>Nonaktif ${i}</span><span><span class="dot checking"></span>Memeriksa ${ch}</span><span><span class="dot unknown"></span>Belum ${u}</span>`;
 const c=document.getElementById('stationsContainer');
 const cities=getCities();
 let html='',has=false;
@@ -474,6 +488,15 @@ volSlider.oninput=function(){player.volume=parseFloat(this.value)};
 player.volume=0.8;
 
 load();renderStations();updateBottom();checkAllStations();
+setInterval(checkAllStations,300000);
+
+(function(){
+const el=document.getElementById('visitorCount');
+let n=parseInt(localStorage.getItem('vc'))||0;
+n++;localStorage.setItem('vc',n);
+el.textContent='\u2022 Kunjungan: '+n.toLocaleString();
+fetch('https://api.countapi.xyz/hit/radio-stream/visitors').then(r=>r.json()).then(d=>{if(d.value)el.textContent='\u2022 Pengunjung: '+d.value.toLocaleString()}).catch(()=>{});
+})();
 </script>
 </body>
 </html>
