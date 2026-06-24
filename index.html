@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Stream</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;padding-bottom:80px}
+.container{max-width:800px;margin:0 auto;padding:16px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.header h1{font-size:22px;font-weight:700;background:linear-gradient(135deg,#f0883e,#bc8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.add-toggle{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+.add-toggle:hover{border-color:#f0883e;color:#f0f6fc}
+.add-form{display:none;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.add-form.show{display:flex}
+.add-form input{flex:1;min-width:140px;padding:8px 12px;border-radius:8px;border:1px solid #30363d;background:#161b22;color:#c9d1d9;font-size:13px;outline:none}
+.add-form input:focus{border-color:#f0883e}
+.add-form button{padding:8px 16px;border-radius:8px;border:none;background:#f0883e;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.add-form button:hover{background:#d97706}
+.search-bar{margin-bottom:16px}
+.search-bar input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #30363d;background:#161b22;color:#c9d1d9;font-size:13px;outline:none;transition:border-color .15s}
+.search-bar input:focus{border-color:#f0883e}
+.city-section{margin-bottom:4px;border:1px solid #21262d;border-radius:12px;overflow:hidden}
+.city-section:has(.city-body.open){border-color:#30363d}
+.city-header{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#f0f6fc;padding:10px 12px;cursor:pointer;transition:background .15s;user-select:none}
+.city-header:hover{background:#1c2333}
+.city-header .icon{font-size:16px}
+.city-header .count{font-size:12px;color:#484f58;font-weight:400}
+.city-header .arrow{font-size:12px;color:#484f58;margin-left:auto;transition:transform .2s}
+.city-header .arrow.open{transform:rotate(180deg)}
+.city-body{display:none;padding:4px 4px 8px}
+.city-body.open{display:block}
+.station-card{display:flex;align-items:center;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .12s;gap:10px}
+.station-card:hover{background:#1c2333}
+.station-card.active{background:#1a2e1a}
+.station-card .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.station-card .status-dot.unknown{background:#30363d}
+.station-card .status-dot.active{background:#3fb950;box-shadow:0 0 6px #3fb950}
+.station-card .status-dot.inactive{background:#da3633}
+.station-card .status-dot.checking{background:#d29922;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.station-card .info{flex:1;min-width:0}
+.station-card .name{font-size:14px;font-weight:500;color:#f0f6fc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.station-card .freq{font-size:11px;color:#484f58;margin-left:6px;font-weight:400}
+.station-card .sub{font-size:11px;color:#8b949e;margin-top:2px}
+.station-card .remove{background:none;border:none;color:#484f58;cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px;line-height:1;visibility:hidden}
+.station-card:hover .remove{visibility:visible}
+.station-card .remove:hover{color:#f85149;background:#2d1b1b}
+.empty{color:#8b949e;text-align:center;padding:40px;font-size:13px}
+.bottom-player{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid #30363d;padding:10px 16px;z-index:100;display:flex;align-items:center;gap:12px}
+.bottom-player .info{flex:1;min-width:0}
+.bottom-player .name{font-size:14px;font-weight:600;color:#f0f6fc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bottom-player .meta{font-size:11px;color:#8b949e;margin-top:1px}
+.bottom-player .ctrl{display:flex;align-items:center;gap:8px}
+.bottom-player .ctrl button{background:none;border:none;color:#c9d1d9;cursor:pointer;font-size:22px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.bottom-player .ctrl button:hover{background:#30363d;color:#f0f6fc}
+.bottom-player .ctrl button.playing{color:#3fb950}
+.bottom-player audio{width:160px;height:32px}
+@media(max-width:500px){
+.bottom-player{flex-wrap:wrap;padding:8px 10px;gap:6px}
+.bottom-player audio{width:100%;height:28px}
+.bottom-player .info{width:calc(100% - 44px)}
+.container{padding:10px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>Radio Stream</h1>
+<button class="add-toggle" id="addToggle">+ Tambah</button>
+</div>
+
+<div class="add-form" id="addForm">
+<input type="text" id="urlInput" placeholder="URL stream">
+<input type="text" id="nameInput" placeholder="Nama">
+<input type="text" id="countryInput" placeholder="Kota">
+<button id="addBtn">Tambah</button>
+</div>
+
+<div class="search-bar">
+<input type="text" id="searchInput" placeholder="Cari radio...">
+</div>
+
+<div id="stationsContainer"></div>
+</div>
+
+<div class="bottom-player" id="bottomPlayer">
+<div class="info">
+<div class="name" id="bottomTitle">Pilih radio</div>
+<div class="meta" id="bottomMeta"></div>
+</div>
+<div class="ctrl">
+<button id="playBtn" title="Play/Pause">&#9654;</button>
+<audio id="player"></audio>
+</div>
+</div>
+
+<script>
+const stations=[
+// ── Jakarta ──
+{name:"Gen 98.7 FM",url:"https://streaming.sim-indonesia.com:8000/genfm",city:"Jakarta"},
+{name:"Jak 101 FM",url:"https://wz.mari.co.id:1936/web_jakfm/jakfm/playlist.m3u8",city:"Jakarta"},
+{name:"Delta FM 99.1",url:"http://live.deltafm.net:9002/",city:"Jakarta"},
+{name:"Hard Rock FM",url:"http://stream.radiojar.com/rrqf78p3bnzuv",city:"Jakarta"},
+{name:"FeMale Radio 97.9",url:"https://stream.rcs.revma.com/9thenqqd2ncwv",city:"Jakarta"},
+{name:"Prambors FM",url:"http://masima.rastream.com/masima-pramborsjakarta?",city:"Jakarta"},
+{name:"KIS 95.1 FM",url:"https://wz.mari.co.id:1936/web_kisfm/kisfm/playlist.m3u8",city:"Jakarta"},
+{name:"Most Radio 105.8",url:"https://wz.mari.co.id:1936/web_mostfm/mostfm/playlist.m3u8",city:"Jakarta"},
+{name:"Mustang 88.0 FM",url:"http://stream.suararadio.com:8000/mustang_88_stereo",city:"Jakarta"},
+{name:"Radio Elshinta",url:"http://202.137.4.147:8000/;stream.mp3",city:"Jakarta"},
+{name:"RRI Pro 1",url:"http://streaming.rri.co.id:9025/web-rrijakartapro1.mp3",city:"Jakarta"},
+{name:"RRI Pro 2",url:"http://streaming.rri.co.id:9025/web-rrijakartapro2.mp3",city:"Jakarta"},
+{name:"RRI Pro 3",url:"http://streaming.rri.co.id:9014/web-kbrn.mp3",city:"Jakarta"},
+{name:"RRI Pro 4",url:"http://streaming.rri.co.id:9025/web-rrijakartapro4.mp3",city:"Jakarta"},
+{name:"iSWARA Jakarta",url:"https://stream.radiojar.com/4ywdgup3bnzuv",city:"Jakarta"},
+{name:"V-Radio 106.6",url:"https://stream.radiojar.com/5k7t0rq3bnzuv",city:"Jakarta"},
+{name:"Cosmopolitan FM",url:"https://stream.radiojar.com/5k7t0rq3bnzuv",city:"Jakarta"},
+{name:"Bens Radio 106.2",url:"https://streaming.bensradio.com:8522/stream",city:"Jakarta"},
+{name:"Sonora FM",url:"http://stream.suararadio.com:8000/bandung_sonora_stereo",city:"Jakarta"},
+{name:"Motion Radio",url:"http://103.226.246.245/kompas-motionjakarta",city:"Jakarta"},
+{name:"TRL FM",url:"http://45.64.97.211:1031/;stream.nsv",city:"Jakarta"},
+{name:"RDI FM 97.1",url:"http://stream.suararadio.com:8000/rdifm_stereo",city:"Jakarta"},
+{name:"MNC Trijaya FM",url:"http://202.147.199.101:8000/;stream.nsv",city:"Jakarta"},
+{name:"Rasika FM",url:"http://stream.suararadio.com:8000/bekasi_gayafm_stereo",city:"Jakarta"},
+{name:"OZ Radio",url:"http://45.64.97.211:1031/;stream.nsv",city:"Jakarta"},
+{name:"Paramuda Radio 93.7",url:"http://radio.simaya.net.id:8300/;",city:"Jakarta"},
+{name:"iRadio Jakarta",url:"http://cloudstreaming.mramedia.com:8005/live",city:"Jakarta"},
+
+// ── Bandung ──
+{name:"Ardan Radio 105.9",url:"http://listento.ardanradio.com:1059/;",city:"Bandung"},
+{name:"RRI Pro 1 Bandung",url:"http://streaming.rri.co.id:9015/web-rribandungpro1.mp3",city:"Bandung"},
+{name:"RRI Pro 2 Bandung",url:"http://streaming.rri.co.id:9015/web-rribandungpro2.mp3",city:"Bandung"},
+{name:"iSWARA Bandung",url:"https://stream.radiojar.com/u6ppe6hswk8uv",city:"Bandung"},
+{name:"OZ Radio 103.1",url:"http://45.64.97.211:1031/;",city:"Bandung"},
+{name:"MQFM Bandung",url:"http://streaming.mqfmnetwork.com:8300/;",city:"Bandung"},
+{name:"K-Lite FM",url:"http://svara-stream.radioddns.net:8000/bandung_klite_mp3",city:"Bandung"},
+{name:"Rama FM",url:"http://rama-fm.simaya.net.id:8800/;",city:"Bandung"},
+{name:"Dahlia FM 101.5",url:"https://svara-stream.radioddns.net:8443/bandung_dahliafm",city:"Bandung"},
+{name:"PRFM 107.5",url:"http://prfm.pikiran-rakyat.com:8000/",city:"Bandung"},
+{name:"Radio Cakra",url:"http://dengerin.radiocakrabandung.com:8905/radio.mp3/;",city:"Bandung"},
+
+// ── Surabaya ──
+{name:"Suara Surabaya 100 FM",url:"http://stream.suararadio.com:8000/suarasurabaya_mp3",city:"Surabaya"},
+{name:"Gen FM Surabaya",url:"http://streaming.sim-indonesia.com:8000/gensby",city:"Surabaya"},
+{name:"Smart FM",url:"http://stream.suararadio.com:8000/smartfmsurabaya",city:"Surabaya"},
+{name:"RRI Pro 1 Surabaya",url:"http://streaming.rri.co.id:9115/rrisurabayapro1.mp3",city:"Surabaya"},
+{name:"iSWARA Surabaya",url:"https://stream.radiojar.com/yg8ne2v80k8uv",city:"Surabaya"},
+
+// ── Yogyakarta ──
+{name:"Geronimo FM",url:"http://live2.indostreamserver.com:8018/;",city:"Yogyakarta"},
+{name:"Retjo Buntung FM",url:"http://45.64.97.82:9560/rbtfm/",city:"Yogyakarta"},
+{name:"iSWARA Jogja",url:"https://stream.radiojar.com/hnf2cbv80k8uv",city:"Yogyakarta"},
+
+// ── Semarang ──
+{name:"Gajahmada FM 102.4",url:"http://gajahmada.i.streaming.id:8000/live",city:"Semarang"},
+{name:"Radio Imelda FM",url:"http://i.klikhost.net:8612/;",city:"Semarang"},
+{name:"iSWARA Semarang",url:"https://stream.radiojar.com/fr9zqhv80k8uv",city:"Semarang"},
+
+// ── Medan ──
+{name:"99 MOST FM",url:"http://stream.suararadio.com:8000/mostfm_medan",city:"Medan"},
+{name:"iSWARA Medan",url:"https://stream.radiojar.com/hkuevehswk8uv",city:"Medan"},
+
+// ── Makassar ──
+{name:"iSWARA Makassar",url:"https://stream.radiojar.com/seqmzfeu5k8uv",city:"Makassar"},
+
+// ── Kota Lain ──
+{name:"iSWARA Banjarmasin",url:"https://stream.radiojar.com/qfqd2aw80k8uv",city:"Banjarmasin"},
+{name:"iSWARA Palembang",url:"https://stream.radiojar.com/qv4muvhswk8uv",city:"Palembang"},
+{name:"RRI Pro 1 Samarinda",url:"http://streaming.rri.co.id:9116/rrisamarindapro1.mp3",city:"Samarinda"},
+{name:"Suara Mahakam FM",url:"http://u.klikhost.com:8000/suara_mahakam",city:"Samarinda"},
+{name:"Smart FM Balikpapan",url:"http://101.50.0.77:8000/balikpapan.aac",city:"Balikpapan"},
+{name:"Radio Andika 105.7",url:"https://stream2.andikafm.com:1057/andikafm;",city:"Kediri"},
+{name:"Menara FM 102.8",url:"http://stream.suararadio.com:8000/Bali_MenaraFM_stereo",city:"Bali"},
+
+// ── Religi ──
+{name:"Radio Muslim",url:"http://live.radiomuslim.com/;stream/1/;",city:"Jakarta"},
+{name:"Suara Muslim",url:"http://radio.useetv.com:8024/;",city:"Surabaya"},
+{name:"Radio Rodja",url:"http://live.radiorodjabandung.com/;stream.nsv",city:"Bogor"},
+{name:"Suara Quran",url:"http://suaraquran.com:8030/;audio.mp3",city:"Jakarta"},
+
+// ── Mettaswara Network ──
+{name:"Mettaswara Dangdut",url:"https://pu.klikhost.com:7044/stream",city:"Nasional"},
+{name:"Mettaswara Koplo",url:"https://s3.alhastream.com/radio/8170/radio",city:"Nasional"},
+{name:"Mettaswara Campursari",url:"https://node-29.zeno.fm/0eayacd8qnruv",city:"Nasional"},
+{name:"Mettaswara Nostalgia",url:"https://stream.zenolive.com/8g7rxgp3a1duv",city:"Nasional"},
+{name:"Mettaswara Soft Rock",url:"https://node-33.zeno.fm/1n8mba13zqruv",city:"Nasional"},
+{name:"Mettaswara Indo 2000",url:"http://45.64.97.82:9764/stream",city:"Nasional"},
+];
+
+const cityEmoji={
+"Jakarta":"\u{1F4CD}","Bandung":"\u{26E9}","Surabaya":"\u{1F30A}","Yogyakarta":"\u{1F3F0}",
+"Semarang":"\u{1F332}","Medan":"\u{1F3D8}","Makassar":"\u{1F304}","Bali":"\u{1F334}",
+"Banjarmasin":"\u{26F5}","Palembang":"\u{1F33B}","Samarinda":"\u{1F333}","Balikpapan":"\u{1F4A7}",
+"Kediri":"\u{1F341}","Bogor":"\u{26FA}","Nasional":"\u{1F30D}"
+};
+
+let customStations=[];
+let currentStation=null;
+let searchQuery='';
+let isPlaying=false;
+const statusMap=new Map();
+const expandedCities=new Set();
+
+const player=document.getElementById('player');
+const bottomTitle=document.getElementById('bottomTitle');
+const bottomMeta=document.getElementById('bottomMeta');
+const playBtn=document.getElementById('playBtn');
+
+function getAll(){return[...stations,...customStations]}
+
+function getCities(){
+const cities=new Map();
+getAll().forEach(s=>{
+if(!cities.has(s.city))cities.set(s.city,[]);
+cities.get(s.city).push(s);
+});
+const order=["Jakarta","Bandung","Surabaya","Yogyakarta","Semarang","Medan","Makassar","Bali","Banjarmasin","Palembang","Samarinda","Balikpapan","Kediri","Bogor","Nasional"];
+return [...cities.entries()].sort((a,b)=>{
+const ia=order.indexOf(a[0]);const ib=order.indexOf(b[0]);
+if(ia>=0&&ib>=0)return ia-ib;
+if(ia>=0)return -1;if(ib>=0)return 1;
+return a[0].localeCompare(b[0]);
+});
+}
+
+function filtered(){
+let list=getAll();
+if(searchQuery){const q=searchQuery.toLowerCase();list=list.filter(s=>s.name.toLowerCase().includes(q)||s.city.toLowerCase().includes(q))}
+return list;
+}
+
+function checkStation(s){
+const key=s.url;
+if(statusMap.has(key)&&statusMap.get(key)!=='unknown')return;
+statusMap.set(key,'checking');
+renderStations();
+const c=new AbortController();
+setTimeout(()=>c.abort(),5000);
+fetch(s.url,{mode:'no-cors',signal:c.signal,method:'HEAD'})
+.then(()=>{statusMap.set(key,'active');renderStations()})
+.catch(()=>{statusMap.set(key,'inactive');renderStations()});
+}
+
+function checkAllStations(){
+const all=getAll();
+all.forEach(s=>{statusMap.set(s.url,'unknown')});
+let i=0;
+function next(){
+if(i>=all.length)return;
+const s=all[i++];const key=s.url;
+statusMap.set(key,'checking');
+const c=new AbortController();
+setTimeout(()=>c.abort(),5000);
+fetch(s.url,{mode:'no-cors',signal:c.signal,method:'HEAD'})
+.then(()=>{statusMap.set(key,'active')})
+.catch(()=>{statusMap.set(key,'inactive')})
+.finally(()=>{renderStations();next()});
+}
+for(let n=0;n<4;n++)next();
+}
+
+function renderStations(){
+const c=document.getElementById('stationsContainer');
+const cities=getCities();
+let html='',has=false;
+cities.forEach(([city,list])=>{
+const flist=filtered().filter(s=>s.city===city);
+if(!flist.length)return;
+has=true;
+const icon=cityEmoji[city]||'\u{1F4CD}';
+const open=expandedCities.has(city);
+html+=`<div class="city-section"><div class="city-header" data-city="${city}"><span class="icon">${icon}</span>${city}<span class="count">${flist.length}</span><span class="arrow${open?' open':''}">\u25BC</span></div><div class="city-body${open?' open':''}">`;
+flist.forEach(s=>{
+const isCustom=customStations.includes(s);
+const active=currentStation===s;
+const st=statusMap.get(s.url)||'unknown';
+html+=`<div class="station-card${active?' active':''}" data-u="${s.url}" data-n="${s.name}" data-c="${s.city}">
+<div class="status-dot ${st}" title="${st==='active'?'Online':st==='inactive'?'Offline':'Memeriksa...'}"></div>
+<div class="info"><div class="name">${s.name}</div><div class="sub">${s.city}${isCustom?'  \u2022 Kustom':''}</div></div>
+${isCustom?`<button class="remove" data-i="${customStations.indexOf(s)}">&times;</button>`:''}
+</div>`;
+});
+html+=`</div></div>`;
+});
+c.innerHTML=has?html:'<div class="empty">Tidak ada stasiun ditemukan</div>';
+c.querySelectorAll('.station-card').forEach(el=>{el.onclick=function(e){if(e.target.classList.contains('remove'))return;playStation({url:this.dataset.u,name:this.dataset.n,city:this.dataset.c})}});
+c.querySelectorAll('.city-header').forEach(el=>{el.onclick=function(){const city=this.dataset.city;const body=this.nextElementSibling;body.classList.toggle('open');this.querySelector('.arrow').classList.toggle('open');if(body.classList.contains('open'))expandedCities.add(city);else expandedCities.delete(city)}});
+c.querySelectorAll('.remove').forEach(el=>{el.onclick=function(e){e.stopPropagation();const i=parseInt(this.dataset.i);const s=customStations[i];customStations.splice(i,1);save();renderStations();if(currentStation===s){player.pause();currentStation=null;updateBottom()}}});
+}
+
+function playStation(s){
+currentStation=s;
+player.src=s.url;
+player.play().catch(()=>{statusMap.set(s.url,'inactive');renderStations()});
+updateBottom();
+renderStations();
+}
+
+function updateBottom(){
+if(currentStation){
+bottomTitle.textContent=currentStation.name;
+bottomMeta.textContent=currentStation.city;
+playBtn.innerHTML=isPlaying?'\u{23F8}\u{FE0F}':'\u25B6';
+playBtn.className=isPlaying?'playing':'';
+}else{
+bottomTitle.textContent='Pilih radio';
+bottomMeta.textContent='';
+playBtn.innerHTML='\u25B6';
+playBtn.className='';
+}
+}
+
+function save(){localStorage.setItem('radioCustom',JSON.stringify(customStations))}
+function load(){try{const d=localStorage.getItem('radioCustom');if(d)customStations=JSON.parse(d)}catch(e){}}
+
+document.getElementById('addToggle').onclick=()=>document.getElementById('addForm').classList.toggle('show');
+document.getElementById('addBtn').onclick=()=>{
+const url=document.getElementById('urlInput').value.trim();
+const name=document.getElementById('nameInput').value.trim()||'Radio Baru';
+const city=document.getElementById('countryInput').value.trim()||'Kustom';
+if(!url){alert('Masukkan URL');return}
+customStations.push({name,url,city});
+statusMap.set(url,'unknown');
+save();
+document.getElementById('urlInput').value='';
+document.getElementById('nameInput').value='';
+document.getElementById('countryInput').value='';
+document.getElementById('addForm').classList.remove('show');
+renderStations();
+checkStation(customStations[customStations.length-1]);
+};
+document.getElementById('searchInput').oninput=function(){searchQuery=this.value;if(searchQuery){getCities().forEach(([city])=>expandedCities.add(city))}renderStations()};
+playBtn.onclick=()=>{if(!currentStation)return;if(player.paused){player.play()}else{player.pause()}};
+player.onplay=()=>{isPlaying=true;updateBottom()};
+player.onpause=()=>{isPlaying=false;updateBottom()};
+player.onerror=()=>{if(currentStation){statusMap.set(currentStation.url,'inactive');renderStations()}bottomMeta.textContent='Gagal memuat stream';isPlaying=false;updateBottom()};
+
+load();renderStations();updateBottom();checkAllStations();
+</script>
+</body>
+</html>
