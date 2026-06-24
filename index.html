@@ -4,91 +4,147 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Radio Stream</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh;padding-bottom:100px}
-.container{max-width:800px;margin:0 auto;padding:16px}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.header h1{font-size:22px;font-weight:700;background:linear-gradient(135deg,#f0883e,#bc8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.add-toggle{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
-.add-toggle:hover{border-color:#f0883e;color:#f0f6fc}
-.add-form{display:none;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+:root{--bg:#d4c5a9;--text:#2c1810;--header-bg:linear-gradient(135deg,#5c3a1e,#8b5e3c);--header-border:#3d2410;--header-text:#f5e6c8;--faceplate-bg:linear-gradient(145deg,#3d2410,#5c3a1e);--faceplate-border:#2a1808;--display-bg:#1a1814;--display-text:#f5e6c8;--display-label:#8b7a5a;--knob-bg:radial-gradient(circle at 35% 35%,#e8cba0,#d4a84a 50%,#b8922a);--knob-border:#2a1808;--knob-indicator:#3d2410;--accent:#d4a84a;--active:#3a7d3a;--inactive:#b33a3a;--checking:#b8922a;--playlist-bg:#e8dcc8;--playlist-border:#b8a68a;--card-bg:#f5ede0;--card-hover:#e8dcc8;--card-active:linear-gradient(90deg,#d4c5a9,transparent);--card-text:#2c1810;--card-sub:#6b5a4a;--scrollbar-track:#d4c5a9;--scrollbar-thumb:#b8a68a;--footer-text:#6b5a4a;--btn-bg:#d4b483;--btn-text:#2c1810;--btn-border:#3d2410;--input-bg:#faf3e8;--input-border:#b8a68a;--input-focus:#8b5e3c;--form-bg:#e8dcc8;--form-border:#b8a68a}
+
+[data-theme=dark]{--bg:#1a1410;--text:#c9b89a;--header-bg:linear-gradient(135deg,#2a1a0e,#3d2410);--header-border:#1a0e06;--header-text:#c9b89a;--faceplate-bg:linear-gradient(145deg,#2a1a0e,#1a0e06);--faceplate-border:#0d0704;--display-bg:#080605;--display-text:#c9b89a;--display-label:#6b5a4a;--knob-bg:radial-gradient(circle at 35% 35%,#8b7a5a,#5c4a30 50%,#3d2a1a);--knob-border:#0d0704;--knob-indicator:#c9b89a;--accent:#8b7a5a;--playlist-bg:#1f1812;--playlist-border:#2a1a0e;--card-bg:#241c15;--card-hover:#2a221a;--card-active:linear-gradient(90deg,#3d2a1a,transparent);--card-text:#c9b89a;--card-sub:#6b5a4a;--scrollbar-track:#1a1410;--scrollbar-thumb:#2a1a0e;--footer-text:#4a3a2a;--btn-bg:#3d2a1a;--btn-text:#c9b89a;--btn-border:#1a0e06;--input-bg:#1f1812;--input-border:#2a1a0e;--input-focus:#5c4a30;--form-bg:#1f1812;--form-border:#2a1a0e}
+
+[data-theme=retro]{--bg:#1a1a0e;--text:#b8b84a;--header-bg:linear-gradient(135deg,#2a3a1a,#3a4a2a);--header-border:#1a2a0e;--header-text:#b8b84a;--faceplate-bg:linear-gradient(145deg,#2a3a1a,#1a2a0e);--faceplate-border:#0d1a06;--display-bg:#050a03;--display-text:#8ae84a;--display-label:#5a7a3a;--knob-bg:radial-gradient(circle at 35% 35%,#8ae84a,#5aaa2a 50%,#3a7a1a);--knob-border:#0d1a06;--knob-indicator:#1a2a0e;--accent:#5aaa2a;--active:#3aaa2a;--inactive:#aa3a2a;--checking:#aaaa2a;--playlist-bg:#1a1a0e;--playlist-border:#2a3a1a;--card-bg:#1f2012;--card-hover:#2a3a1a;--card-active:linear-gradient(90deg,#2a3a1a,transparent);--card-text:#b8b84a;--card-sub:#5a7a3a;--scrollbar-track:#1a1a0e;--scrollbar-thumb:#2a3a1a;--footer-text:#3a4a2a;--btn-bg:#2a3a1a;--btn-text:#b8b84a;--btn-border:#1a2a0e;--input-bg:#1a1a0e;--input-border:#2a3a1a;--input-focus:#5aaa2a;--form-bg:#1a1a0e;--form-border:#2a3a1a}
+
+[data-theme=cream]{--bg:#f5ede0;--text:#4a3a2a;--header-bg:linear-gradient(135deg,#d4c5a9,#e8dcc8);--header-border:#b8a68a;--header-text:#4a3a2a;--faceplate-bg:linear-gradient(145deg,#e8dcc8,#d4c5a9);--faceplate-border:#b8a68a;--display-bg:#faf3e8;--display-text:#4a3a2a;--display-label:#8b7a5a;--knob-bg:radial-gradient(circle at 35% 35%,#f5ede0,#d4c5a9 50%,#b8a68a);--knob-border:#8b7a5a;--knob-indicator:#4a3a2a;--accent:#8b7a5a;--playlist-bg:#faf3e8;--playlist-border:#d4c5a9;--card-bg:#fffaf0;--card-hover:#f5ede0;--card-active:linear-gradient(90deg,#e8dcc8,transparent);--card-text:#4a3a2a;--card-sub:#8b7a5a;--scrollbar-track:#f5ede0;--scrollbar-thumb:#d4c5a9;--footer-text:#b8a68a;--btn-bg:#d4c5a9;--btn-text:#4a3a2a;--btn-border:#b8a68a;--input-bg:#fffaf0;--input-border:#d4c5a9;--input-focus:#8b7a5a;--form-bg:#faf3e8;--form-border:#d4c5a9}
+
+[data-theme=copper]{--bg:#2a1a10;--text:#e8cba0;--header-bg:linear-gradient(135deg,#5c3a1e,#8b5e3c);--header-border:#3d2410;--header-text:#f5e6c8;--faceplate-bg:linear-gradient(145deg,#5c3a1e,#8b5e3c);--faceplate-border:#3d2410;--display-bg:#1a1008;--display-text:#f5e6c8;--display-label:#b8922a;--knob-bg:radial-gradient(circle at 35% 35%,#f0a040,#d08020 50%,#a06010);--knob-border:#3d2410;--knob-indicator:#f5e6c8;--accent:#d08020;--playlist-bg:#2a1a10;--playlist-border:#4a3020;--card-bg:#2a1a10;--card-hover:#3d2410;--card-active:linear-gradient(90deg,#4a3020,transparent);--card-text:#e8cba0;--card-sub:#8b7a5a;--scrollbar-track:#2a1a10;--scrollbar-thumb:#4a3020;--footer-text:#4a3020;--btn-bg:#5c3a1e;--btn-text:#f5e6c8;--btn-border:#3d2410;--input-bg:#1a1008;--input-border:#4a3020;--input-focus:#d08020;--form-bg:#2a1a10;--form-border:#4a3020}
+
+[data-theme=modern]{--bg:#0d1117;--text:#e6edf3;--header-bg:linear-gradient(135deg,#161b22,#1c2333);--header-border:#30363d;--header-text:#e6edf3;--faceplate-bg:linear-gradient(145deg,#161b22,#0d1117);--faceplate-border:#30363d;--display-bg:#05080f;--display-text:#58a6ff;--display-label:#8b949e;--knob-bg:#0d1117;--knob-border:#30363d;--knob-indicator:#58a6ff;--accent:#58a6ff;--active:#3fb950;--inactive:#f85149;--checking:#d29922;--playlist-bg:#161b22;--playlist-border:#30363d;--card-bg:#161b22;--card-hover:#1c2333;--card-active:linear-gradient(90deg,#1f6feb22,transparent);--card-text:#e6edf3;--card-sub:#8b949e;--scrollbar-track:#0d1117;--scrollbar-thumb:#30363d;--footer-text:#30363d;--btn-bg:#21262d;--btn-text:#e6edf3;--btn-border:#30363d;--input-bg:#0d1117;--input-border:#30363d;--input-focus:#58a6ff;--form-bg:#161b22;--form-border:#30363d}
+
+body{font-family:Georgia,'Times New Roman',serif;min-height:100vh;background:var(--bg);background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.02) 3px,rgba(0,0,0,.02) 6px),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,0,0,.015) 3px,rgba(0,0,0,.015) 6px);color:var(--text);padding-bottom:20px;transition:background .4s,color .4s}
+.container{max-width:780px;margin:0 auto;padding:12px}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 14px;background:var(--header-bg);border-radius:10px 10px 0 0;border:2px solid var(--header-border);border-bottom:none;box-shadow:inset 0 1px 0 rgba(255,255,240,.15);transition:background .4s,border .4s}
+.header h1{font-size:18px;font-weight:700;color:var(--header-text);text-shadow:1px 1px 0 var(--header-border);letter-spacing:.5px;transition:color .4s}
+.header-actions{display:flex;align-items:center;gap:6px}
+.theme-btn{background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--btn-text);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;transition:all .2s}
+.theme-btn:hover{opacity:.85}
+.theme-btn:focus{outline:2px solid var(--accent);outline-offset:1px}
+.theme-drop{position:relative;display:inline-block}
+.theme-menu{display:none;position:absolute;right:0;top:100%;z-index:50;background:var(--form-bg);border:1px solid var(--form-border);border-radius:8px;padding:4px;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,.25);margin-top:4px}
+.theme-menu.show{display:block}
+.theme-menu button{display:block;width:100%;text-align:left;padding:6px 12px;border:none;background:none;color:var(--text);font-size:12px;font-family:inherit;cursor:pointer;border-radius:5px;transition:background .12s}
+.theme-menu button:hover{background:var(--card-hover)}
+.theme-menu button.active{background:var(--accent);color:#fff;font-weight:600}
+.add-toggle{background:var(--btn-bg);border:1px solid var(--btn-border);color:var(--btn-text);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:all .2s}
+.add-toggle:hover{opacity:.85}
+.add-form{display:none;gap:6px;margin-bottom:10px;flex-wrap:wrap;padding:10px;background:var(--form-bg);border:1px solid var(--form-border);border-radius:8px;transition:background .4s,border .4s}
 .add-form.show{display:flex}
-.add-form input{flex:1;min-width:140px;padding:8px 12px;border-radius:8px;border:1px solid #30363d;background:#161b22;color:#c9d1d9;font-size:13px;outline:none}
-.add-form input:focus{border-color:#f0883e}
-.add-form button{padding:8px 16px;border-radius:8px;border:none;background:#f0883e;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
-.add-form button:hover{background:#d97706}
-.search-bar{margin-bottom:16px}
-.search-bar input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #30363d;background:#161b22;color:#c9d1d9;font-size:13px;outline:none;transition:border-color .15s}
-.search-bar input:focus{border-color:#f0883e}
-.status-bar{display:flex;gap:10px;margin-bottom:12px;font-size:11px;color:#8b949e;flex-wrap:wrap}
+.add-form input{flex:1;min-width:120px;padding:6px 10px;border-radius:6px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:12px;outline:none;font-family:inherit;transition:background .4s,border .4s,color .4s}
+.add-form input:focus{border-color:var(--input-focus)}
+.add-form button{padding:6px 14px;border-radius:6px;border:1px solid var(--btn-border);background:var(--header-bg);color:var(--header-text);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.add-form button:hover{opacity:.85}
+.search-bar{margin-bottom:8px}
+.search-bar input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:12px;outline:none;font-family:inherit;font-style:italic;transition:background .4s,border .4s,color .4s}
+.search-bar input:focus{border-color:var(--input-focus)}
+
+/* Status bar */
+.status-bar{display:flex;gap:10px;margin-bottom:10px;font-size:11px;color:var(--card-sub);flex-wrap:wrap;padding:4px 2px;transition:color .4s}
 .status-bar span{display:flex;align-items:center;gap:4px}
 .status-bar .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.status-bar .dot.active{background:#3fb950}
-.status-bar .dot.inactive{background:#da3633}
-.status-bar .dot.checking{background:#d29922}
-.status-bar .dot.unknown{background:#30363d}
-.city-section{margin-bottom:4px;border:1px solid #21262d;border-radius:12px;overflow:hidden}
-.city-section:has(.city-body.open){border-color:#30363d}
-.city-header{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#f0f6fc;padding:10px 12px;cursor:pointer;transition:background .15s;user-select:none}
-.city-header:hover{background:#1c2333}
-.city-header .icon{font-size:16px}
-.city-header .count{font-size:12px;color:#484f58;font-weight:400}
-.city-header .arrow{font-size:12px;color:#484f58;margin-left:auto;transition:transform .2s}
+.status-bar .dot.active{background:var(--active)}
+.status-bar .dot.inactive{background:var(--inactive)}
+.status-bar .dot.checking{background:var(--checking)}
+.status-bar .dot.unknown{background:var(--card-sub)}
+
+/* Classic radio faceplate */
+.radio-faceplate{background:var(--faceplate-bg);border:3px solid var(--faceplate-border);border-radius:14px;padding:16px 18px 14px;margin-bottom:12px;box-shadow:inset 0 2px 4px rgba(255,255,240,.1),0 3px 8px rgba(0,0,0,.3);position:relative;transition:background .4s,border .4s}
+.radio-faceplate::before{content:'';position:absolute;top:4px;left:12px;right:12px;height:1px;background:rgba(255,255,240,.12);border-radius:50%}
+.radio-display{background:var(--display-bg);border:2px solid var(--faceplate-border);border-radius:8px;padding:18px 22px;min-height:80px;text-align:center;box-shadow:inset 0 0 20px rgba(0,0,0,.5);transition:background .4s,border .4s}
+
+.radio-display .label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--display-label);margin-bottom:2px;transition:color .4s}
+.radio-display .station-name{font-size:22px;font-weight:700;color:var(--display-text);text-shadow:0 0 10px rgba(245,230,200,.15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:28px;transition:color .4s}
+.radio-display .station-meta{font-size:11px;color:var(--display-label);margin-top:2px;min-height:16px;transition:color .4s}
+[data-theme=modern] .radio-display .station-name{font-family:'Orbitron',monospace;font-weight:600;letter-spacing:1px;text-shadow:0 0 20px rgba(88,166,255,.2);font-size:20px}
+[data-theme=modern] .radio-display .station-meta{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px}
+
+/* Radio controls */
+.radio-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px}
+.radio-controls button{background:linear-gradient(145deg,#4a3020,#3d2410);border:1px solid #2a1808;color:#e8dcc8;cursor:pointer;font-size:18px;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .1s;box-shadow:0 2px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,240,.1)}
+.radio-controls button:hover{background:linear-gradient(145deg,#5c3a1e,#4a3020)}
+.radio-controls button.playing{color:#d4a84a;box-shadow:0 0 8px rgba(212,168,74,.2)}
+.radio-controls audio{width:90px;height:24px;filter:sepia(1) hue-rotate(-20deg)}
+
+/* Playlist */
+.playlist-wrap{border:2px solid var(--playlist-border);border-radius:10px;background:var(--playlist-bg);box-shadow:inset 0 0 0 1px rgba(255,255,240,.5),0 2px 6px rgba(0,0,0,.15);overflow:hidden;transition:background .4s,border .4s}
+.playlist-scroll{max-height:460px;overflow-y:auto;padding:4px}
+.playlist-scroll::-webkit-scrollbar{width:6px}
+.playlist-scroll::-webkit-scrollbar-track{background:var(--scrollbar-track);border-radius:3px}
+.playlist-scroll::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px}
+.playlist-scroll::-webkit-scrollbar-thumb:hover{background:var(--card-sub)}
+
+.city-section{border:1px solid var(--playlist-border);border-radius:8px;margin-bottom:3px;overflow:hidden;background:var(--card-bg);transition:background .4s,border .4s}
+.city-section:has(.city-body.open){border-color:var(--playlist-border)}
+.city-header{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--card-text);padding:7px 10px;cursor:pointer;user-select:none;background:linear-gradient(180deg,var(--card-bg),var(--playlist-bg));border-bottom:1px solid transparent;transition:color .4s,background .4s}
+.city-header:hover{background:linear-gradient(180deg,var(--card-hover),var(--playlist-bg))}
+.city-header .count{font-size:10px;color:var(--card-sub);font-weight:400}
+.city-header .arrow{font-size:10px;color:var(--card-sub);margin-left:auto;transition:transform .2s}
 .city-header .arrow.open{transform:rotate(180deg)}
-.city-body{display:none;padding:4px 4px 8px}
+.city-body{display:none}
 .city-body.open{display:block}
-.station-card{display:flex;align-items:center;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .12s;gap:10px}
-.station-card:hover{background:#1c2333}
-.station-card.active{background:#1a2e1a}
-.station-card .status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
-.station-card .status-dot.unknown{background:#30363d}
-.station-card .status-dot.active{background:#3fb950;box-shadow:0 0 6px #3fb950}
-.station-card .status-dot.inactive{background:#da3633}
-.station-card .status-dot.checking{background:#d29922;animation:pulse .8s infinite}
+.station-card{display:flex;align-items:center;padding:6px 10px;cursor:pointer;transition:background .1s;gap:8px;border-radius:6px;margin:1px 0}
+.station-card:hover{background:var(--card-hover)}
+.station-card.active{background:var(--card-active)}
+.station-card .status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.station-card .status-dot.unknown{background:var(--card-sub)}
+.station-card .status-dot.active{background:var(--active)}
+.station-card .status-dot.inactive{background:var(--inactive)}
+.station-card .status-dot.checking{background:var(--checking);animation:pulse .8s infinite}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 .station-card .info{flex:1;min-width:0}
-.station-card .name{font-size:14px;font-weight:500;color:#f0f6fc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.station-card .sub{font-size:11px;color:#8b949e;margin-top:2px}
+.station-card .name{font-size:12px;font-weight:500;color:var(--card-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.station-card .sub{font-size:10px;color:var(--card-sub);margin-top:1px}
 .station-card .actions{display:flex;gap:2px;flex-shrink:0}
-.station-card .actions button{background:none;border:none;color:#484f58;cursor:pointer;font-size:15px;padding:2px 4px;border-radius:4px;line-height:1;visibility:hidden}
+.station-card .actions button{background:none;border:none;color:var(--card-sub);cursor:pointer;font-size:13px;padding:1px 3px;border-radius:3px;line-height:1;visibility:hidden}
 .station-card:hover .actions button{visibility:visible}
-.station-card .actions .edit:hover{color:#58a6ff;background:#1c2333}
-.station-card .actions .remove:hover{color:#f85149;background:#2d1b1b}
-.empty{color:#8b949e;text-align:center;padding:40px;font-size:13px}
-.footer{text-align:center;padding:24px 16px 8px;font-size:12px;color:#484f58}
-.footer a{color:#484f58;text-decoration:none}
-.footer a:hover{color:#58a6ff}
-#visitorCount{color:#484f58;font-size:11px;margin-left:8px}
+.station-card .actions .edit:hover{color:var(--card-text);background:var(--card-hover)}
+.station-card .actions .remove:hover{color:var(--inactive);background:rgba(179,58,58,.15)}
+.empty{color:var(--card-sub);text-align:center;padding:30px;font-size:12px;font-style:italic}
+.footer{text-align:center;padding:20px 16px 6px;font-size:11px;color:var(--footer-text);transition:color .4s}
+.footer a{color:var(--footer-text);text-decoration:none}
+.footer a:hover{color:var(--card-text)}
+#visitorCount{color:var(--footer-text);font-size:11px;margin-left:6px}
 
-/* Bottom player */
-.bottom-player{position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid #30363d;padding:10px 16px;z-index:100;display:flex;align-items:center;gap:10px}
-.bottom-player .logo{width:36px;height:36px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;overflow:hidden;background:#21262d}
-.bottom-player .logo img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-.bottom-player .info{flex:1;min-width:0}
-.bottom-player .name{font-size:13px;font-weight:600;color:#f0f6fc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bottom-player .meta{font-size:11px;color:#8b949e;margin-top:1px}
-.bottom-player .ctrl{display:flex;align-items:center;gap:6px}
-.bottom-player .ctrl button{background:none;border:none;color:#c9d1d9;cursor:pointer;font-size:20px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.bottom-player .ctrl button:hover{background:#30363d;color:#f0f6fc}
-.bottom-player .ctrl button.playing{color:#3fb950}
-.bottom-player audio{width:120px;height:28px}
-.bottom-player input[type=range]{width:60px;height:4px;-webkit-appearance:none;appearance:none;background:#30363d;border-radius:2px;outline:none;cursor:pointer}
-.bottom-player input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#f0883e;border:none;cursor:pointer}
 @media(max-width:500px){
-.bottom-player{flex-wrap:wrap;padding:8px 10px;gap:6px}
-.bottom-player audio{width:80px;height:24px}
-.bottom-player input[type=range]{width:40px}
-.bottom-player .info{width:auto;flex:1;min-width:60px}
-.container{padding:10px}
+.radio-display .station-name{font-size:18px}
+.radio-display{padding:12px 14px}
+[data-theme=modern] .radio-display .station-name{font-size:16px}
+.radio-controls{gap:8px}
+.radio-controls button{width:36px;height:36px;font-size:15px}
+.radio-controls audio{width:60px}
+.playlist-scroll{max-height:320px}
+.container{padding:8px}
 }
 </style>
 </head>
 <body>
 <div class="container">
+
 <div class="header">
 <h1>Radio Stream</h1>
+<div class="header-actions">
+<div class="theme-drop">
+<button class="theme-btn" id="themeBtn">Tema</button>
+<div class="theme-menu" id="themeMenu">
+<button data-theme="classic">Classic Vintage</button>
+<button data-theme="dark">Dark Wood</button>
+<button data-theme="retro">Retro Green</button>
+<button data-theme="cream">Cream</button>
+<button data-theme="copper">Copper</button>
+<button data-theme="modern">Modern</button>
+</div>
+</div>
 <button class="add-toggle" id="addToggle">+ Tambah</button>
+</div>
 </div>
 
 <div class="add-form" id="addForm">
@@ -104,29 +160,29 @@ body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;min-heig
 
 <div class="status-bar" id="statusBar"></div>
 
-<div id="stationsContainer"></div>
-
-<div class="footer"><a href="https://github.com/budijoi/radio-stream" target="_blank">budijoi 2026</a> <span id="visitorCount"></span></div>
+<div class="radio-faceplate">
+<div class="radio-display">
+<div class="label" id="displayLabel">Now Playing</div>
+<div class="station-name" id="displayName">Pilih Radio</div>
+<div class="station-meta" id="displayMeta"></div>
 </div>
-
-<div class="bottom-player" id="bottomPlayer">
-<div class="logo" id="playerLogo" style="background:#21262d"></div>
-<div class="info">
-<div class="name" id="bottomTitle">Pilih radio</div>
-<div class="meta" id="bottomMeta"></div>
-</div>
-<div class="ctrl">
+<div class="radio-controls">
 <button id="playBtn" title="Play/Pause">&#9654;</button>
-<input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.8">
 <audio id="player"></audio>
 </div>
 </div>
 
+<div class="playlist-wrap">
+<div class="playlist-scroll" id="stationsContainer"></div>
+</div>
+
+<div class="footer"><a href="https://github.com/budijoi/radio-stream" target="_blank">budijoi 2026</a> <span id="visitorCount"></span></div>
+</div>
+
 <script>
-const colors=["#f0883e","#58a6ff","#3fb950","#bc8cff","#f85149","#d29922","#79c0ff","#ff7b72","#a5d6ff","#7ee787","#c9d1d9","#e3b341"];
+const colors=["#5c3a1e","#8b5e3c","#d4a84a","#6b4226","#b8922a","#4a3020","#a08060","#c8a87c","#7a5a3a","#e8cba0","#b8a68a","#d4b483"];
 
 let stations=[
-// ── Jakarta ──
 {name:"Bens Radio 106.2",url:"https://streaming.bensradio.com:8522/stream",city:"Jakarta"},
 {name:"Cosmopolitan FM",url:"https://stream.radiojar.com/5k7t0rq3bnzuv",city:"Jakarta"},
 {name:"Delta FM 99.1",url:"http://live.deltafm.net:9002/",city:"Jakarta"},
@@ -163,8 +219,6 @@ let stations=[
 {name:"AXR Jakarta",url:"https://jakartastreammp3.axr.online/",city:"Jakarta"},
 {name:"Sindo Radio",url:"http://202.147.199.101:8000/",city:"Jakarta"},
 {name:"Prambors 102.2",url:"https://stream.rcs.revma.com/h77wwp48kxcwv",city:"Jakarta"},
-
-// ── Bandung ──
 {name:"Ardan Radio 105.9",url:"http://listento.ardanradio.com:1059/;",city:"Bandung"},
 {name:"Dahlia FM 101.5",url:"https://svara-stream.radioddns.net:8443/bandung_dahliafm",city:"Bandung"},
 {name:"iSWARA Bandung",url:"https://stream.radiojar.com/u6ppe6hswk8uv",city:"Bandung"},
@@ -182,56 +236,32 @@ let stations=[
 {name:"Sindo Radio Bandung",url:"http://stream.radbdg.net:8000/sindoradio.mp3",city:"Bandung"},
 {name:"Maya Radio 98FM Bandung",url:"https://svara-stream.radioddns.net:8443/bandung_mayafm_mono",city:"Bandung"},
 {name:"Radio Kencana Bandung",url:"http://i.klikhost.com:8822/",city:"Bandung"},
-
-// ── Surabaya ──
 {name:"Gen FM Surabaya",url:"http://streaming.sim-indonesia.com:8000/gensby",city:"Surabaya"},
 {name:"iSWARA Surabaya",url:"https://stream.radiojar.com/yg8ne2v80k8uv",city:"Surabaya"},
 {name:"RRI Pro 1 Surabaya",url:"http://streaming.rri.co.id:9115/rrisurabayapro1.mp3",city:"Surabaya"},
 {name:"Smart FM",url:"http://stream.suararadio.com:8000/smartfmsurabaya",city:"Surabaya"},
 {name:"Suara Surabaya 100 FM",url:"http://stream.suararadio.com:8000/suarasurabaya_mp3",city:"Surabaya"},
-
-// ── Yogyakarta ──
 {name:"Geronimo FM",url:"http://live2.indostreamserver.com:8018/;",city:"Yogyakarta"},
 {name:"iSWARA Jogja",url:"https://stream.radiojar.com/hnf2cbv80k8uv",city:"Yogyakarta"},
 {name:"Retjo Buntung FM",url:"http://45.64.97.82:9560/rbtfm/",city:"Yogyakarta"},
 {name:"Radio Kotaperak Yogyakarta",url:"http://203.30.236.2:9462",city:"Yogyakarta"},
-
-// ── Semarang ──
 {name:"88.6 Rhema FM",url:"https://stream.rhemaradio.com/stream/1/",city:"Semarang"},
 {name:"Gajahmada FM 102.4",url:"http://gajahmada.i.streaming.id:8000/live",city:"Semarang"},
 {name:"iSWARA Semarang",url:"https://stream.radiojar.com/fr9zqhv80k8uv",city:"Semarang"},
 {name:"Radio Imelda FM",url:"http://i.klikhost.net:8612/;",city:"Semarang"},
 {name:"SpengoRadio SMG",url:"http://s3.freeshoutcast.com:24338",city:"Semarang"},
-
-// ── Surakarta ──
 {name:"El Shaddai FM 91.3",url:"http://shaddai.onlivestreaming.net:9130/live",city:"Surakarta"},
-
-// ── Cirebon ──
 {name:"Kita FM 94.3",url:"https://broadcast.yufid.com/listen/radio_sunnah_cirebon/kitafm",city:"Cirebon"},
-
-// ── Salatiga ──
 {name:"Radio Bass FM 93.2",url:"https://broadcast.yufid.com/listen/bassfm/radio.mp3",city:"Salatiga"},
-
-// ── Pati ──
 {name:"Radio Pas FM 101.1",url:"https://ssg.streamingmurah.com:8886/stream/1/",city:"Pati"},
-
-// ── Medan ──
 {name:"99 MOST FM",url:"http://stream.suararadio.com:8000/mostfm_medan",city:"Medan"},
 {name:"iSWARA Medan",url:"https://stream.radiojar.com/hkuevehswk8uv",city:"Medan"},
-
-// ── Makassar ──
 {name:"iSWARA Makassar",url:"https://stream.radiojar.com/seqmzfeu5k8uv",city:"Makassar"},
 {name:"RRI Pro 1 Makassar",url:"https://stream-node0.rri.co.id/streaming/22/9022/rrimakasarpro1.mp3",city:"Makassar"},
-
-// ── Batam ──
 {name:"RADIO HANG BATAM",url:"https://streamline.hangfm.id/listen/hang106fm/radio.mp3",city:"Batam"},
 {name:"Kei FM Batam",url:"https://i.klikhost.com/9602/stream",city:"Batam"},
-
-// ── Padang ──
 {name:"KIARA FM IKIP PADANG",url:"https://listen6.myradio24.com/27342",city:"Padang"},
 {name:"Radio Rang Minang",url:"http://209.133.216.3:7006/stream",city:"Padang"},
-
-// ── Kota Lain ──
 {name:"iSWARA Banjarmasin",url:"https://stream.radiojar.com/qfqd2aw80k8uv",city:"Banjarmasin"},
 {name:"iSWARA Palembang",url:"https://stream.radiojar.com/qv4muvhswk8uv",city:"Palembang"},
 {name:"Menara FM 102.8",url:"http://stream.suararadio.com:8000/Bali_MenaraFM_stereo",city:"Bali"},
@@ -276,16 +306,12 @@ let stations=[
 {name:"Radio Qabail",url:"http://i.klikhost.net:9122",city:"Lainnya"},
 {name:"Glow Radio ID",url:"http://stream.zeno.fm/0qn5ukqes18uv",city:"Lainnya"},
 {name:"Firza Radio",url:"https://eu1.fastcast4u.com/proxy/kiarafm",city:"Lainnya"},
-
-// ── Religi ──
 {name:"Radio Fajri 99.3",url:"https://ars.mitradio.com:8000/radio.mp3",city:"Bogor"},
 {name:"NAGASWARA RADIOTEMEN Bogor",url:"https://live.nagaswarafm.com/nagaswararadio/stream",city:"Bogor"},
 {name:"Radio Muslim",url:"http://live.radiomuslim.com/;stream/1/;",city:"Jakarta"},
 {name:"Radio Rodja",url:"http://live.radiorodjabandung.com/;stream.nsv",city:"Bogor"},
 {name:"Suara Muslim",url:"http://radio.useetv.com:8024/;",city:"Surabaya"},
 {name:"Suara Quran",url:"http://suaraquran.com:8030/;audio.mp3",city:"Jakarta"},
-
-// ── Mettaswara Network ──
 {name:"Classy FM",url:"http://c4.siar.us:1034/stream/1/",city:"Nasional"},
 {name:"Dengerin Musik (DMI)",url:"http://stream.denger.in:8888/dmi",city:"Nasional"},
 {name:"Mettaswara Campursari",url:"https://node-29.zeno.fm/0eayacd8qnruv",city:"Nasional"},
@@ -301,18 +327,6 @@ let stations=[
 {name:"Rock Ballads",url:"https://stream.zeno.fm/ynepvmy14bhvv",city:"Nasional"},
 ];
 
-const cityEmoji={
-"Jakarta":"\u{1F4CD}","Bandung":"\u{26E9}","Surabaya":"\u{1F30A}","Yogyakarta":"\u{1F3F0}",
-"Semarang":"\u{1F332}","Surakarta":"\u{1F3E0}","Cirebon":"\u{1F3ED}","Salatiga":"\u{26EA}",
-"Pati":"\u{1F3E1}","Medan":"\u{1F3D8}","Makassar":"\u{1F304}","Bali":"\u{1F334}",
-"Banjarmasin":"\u{26F5}","Palembang":"\u{1F33B}","Samarinda":"\u{1F333}","Balikpapan":"\u{1F4A7}",
-"Kediri":"\u{1F341}","Bogor":"\u{26FA}","Banda Aceh":"\u{1F3F0}","Nasional":"\u{1F30D}",
-"Batam":"\u{1F6EB}","Padang":"\u{1F3D4}","Manado":"\u{1F30A}","Wonosobo":"\u{26F0}",
-"Malang":"\u{1F340}","Blitar":"\u{1F341}","Lombok":"\u{1F3DE}","Tuban":"\u{26F5}",
-"Kulonprogo":"\u{26F0}","Trenggalek":"\u{26F0}","Manokwari":"\u{1F334}","Jambi":"\u{1F33B}",
-"Bumiayu":"\u{26E9}","Batulicin":"\u{1F4A7}","Lainnya":"\u{1F30D}"
-};
-
 let customStations=[];
 let currentStation=null;
 let searchQuery='';
@@ -321,12 +335,24 @@ const statusMap=new Map();
 const expandedCities=new Set();
 
 const player=document.getElementById('player');
-const bottomTitle=document.getElementById('bottomTitle');
-const bottomMeta=document.getElementById('bottomMeta');
+const displayName=document.getElementById('displayName');
+const displayMeta=document.getElementById('displayMeta');
+const displayLabel=document.getElementById('displayLabel');
 const playBtn=document.getElementById('playBtn');
-const playerLogo=document.getElementById('playerLogo');
-const volSlider=document.getElementById('volSlider');
 
+// === Theme ===
+const savedTheme=localStorage.getItem('radioTheme')||'classic';
+document.documentElement.setAttribute('data-theme',savedTheme);
+document.getElementById('themeBtn').onclick=function(e){e.stopPropagation();document.getElementById('themeMenu').classList.toggle('show')};
+document.querySelectorAll('.theme-menu button').forEach(b=>{
+b.onclick=function(){const t=this.dataset.theme;document.documentElement.setAttribute('data-theme',t);localStorage.setItem('radioTheme',t);document.getElementById('themeMenu').classList.remove('show')}
+});
+document.addEventListener('click',()=>document.getElementById('themeMenu').classList.remove('show'));
+
+// Volume fixed at 100%
+player.volume=1.0;
+
+// === Core player ===
 function getAll(){return[...stations,...customStations]}
 
 function getCities(){
@@ -335,13 +361,7 @@ getAll().forEach(s=>{
 if(!cities.has(s.city))cities.set(s.city,[]);
 cities.get(s.city).push(s);
 });
-const order=["Jakarta","Bandung","Surabaya","Yogyakarta","Semarang","Surakarta","Cirebon","Salatiga","Pati","Medan","Makassar","Batam","Padang","Bali","Banjarmasin","Palembang","Banda Aceh","Samarinda","Balikpapan","Kediri","Bogor","Manado","Wonosobo","Malang","Blitar","Lombok","Tuban","Kulonprogo","Trenggalek","Manokwari","Jambi","Bumiayu","Batulicin","Nasional","Lainnya"];
-return [...cities.entries()].sort((a,b)=>{
-const ia=order.indexOf(a[0]);const ib=order.indexOf(b[0]);
-if(ia>=0&&ib>=0)return ia-ib;
-if(ia>=0)return -1;if(ib>=0)return 1;
-return a[0].localeCompare(b[0]);
-});
+return [...cities.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
 }
 
 function filtered(){
@@ -392,16 +412,15 @@ cities.forEach(([city,list])=>{
 const flist=filtered().filter(s=>s.city===city).sort((a,b)=>a.name.localeCompare(b.name));
 if(!flist.length)return;
 has=true;
-const icon=cityEmoji[city]||'\u{1F4CD}';
 const open=expandedCities.has(city);
-html+=`<div class="city-section"><div class="city-header" data-city="${city}"><span class="icon">${icon}</span>${city}<span class="count">${flist.length}</span><span class="arrow${open?' open':''}">\u25BC</span></div><div class="city-body${open?' open':''}">`;
+html+=`<div class="city-section"><div class="city-header" data-city="${city}">${city}<span class="count">${flist.length}</span><span class="arrow${open?' open':''}">\u25BC</span></div><div class="city-body${open?' open':''}">`;
 flist.forEach(s=>{
 const isCustom=customStations.includes(s);
 const active=currentStation===s;
 const st=statusMap.get(s.url)||'unknown';
 html+=`<div class="station-card${active?' active':''}" data-u="${s.url}" data-n="${s.name}" data-c="${s.city}">
 <div class="status-dot ${st}" title="${st==='active'?'Online':st==='inactive'?'Offline':'Memeriksa...'}"></div>
-<div class="info"><div class="name">${s.name}</div><div class="sub">${s.city}${isCustom?'  \u2022 Kustom':''}</div></div>
+<div class="info"><div class="name">${s.name}</div></div>
 <div class="actions">
 <button class="edit" data-i="${isCustom?customStations.indexOf(s):stations.indexOf(s)}" data-type="${isCustom?'custom':'builtin'}">\u270E</button>
 ${isCustom?`<button class="remove" data-i="${customStations.indexOf(s)}">&times;</button>`:''}
@@ -414,35 +433,30 @@ c.innerHTML=has?html:'<div class="empty">Tidak ada stasiun ditemukan</div>';
 c.querySelectorAll('.station-card').forEach(el=>{el.onclick=function(e){if(e.target.closest('.actions'))return;playStation({url:this.dataset.u,name:this.dataset.n,city:this.dataset.c})}});
 c.querySelectorAll('.city-header').forEach(el=>{el.onclick=function(){const city=this.dataset.city;const body=this.nextElementSibling;body.classList.toggle('open');this.querySelector('.arrow').classList.toggle('open');if(body.classList.contains('open'))expandedCities.add(city);else expandedCities.delete(city)}});
 c.querySelectorAll('.edit').forEach(el=>{el.onclick=function(e){e.stopPropagation();const i=parseInt(this.dataset.i);const type=this.dataset.type;const s=type==='builtin'?stations[i]:customStations[i];document.getElementById('urlInput').value=s.url;document.getElementById('nameInput').value=s.name;document.getElementById('cityInput').value=s.city;document.getElementById('addForm').classList.add('show');document.getElementById('addBtn').textContent='Simpan';document.getElementById('addBtn').dataset.editIndex=i;document.getElementById('addBtn').dataset.editType=type}});
-c.querySelectorAll('.remove').forEach(el=>{el.onclick=function(e){e.stopPropagation();const i=parseInt(this.dataset.i);const s=customStations[i];customStations.splice(i,1);save();renderStations();if(currentStation===s){player.pause();currentStation=null;updateBottom()}}});
+c.querySelectorAll('.remove').forEach(el=>{el.onclick=function(e){e.stopPropagation();const i=parseInt(this.dataset.i);const s=customStations[i];customStations.splice(i,1);save();renderStations();if(currentStation===s){player.pause();currentStation=null;updateDisplay()}}});
 }
 
 function playStation(s){
 currentStation=s;
 player.src=s.url;
 player.play().catch(()=>{statusMap.set(s.url,'inactive');renderStations()});
-updateBottom();
+updateDisplay();
 renderStations();
 }
 
-function updateBottom(){
+function updateDisplay(){
 if(currentStation){
-bottomTitle.textContent=currentStation.name;
-bottomMeta.textContent=currentStation.city;
+displayLabel.textContent='Now Playing';
+displayName.textContent=currentStation.name;
+displayMeta.textContent=currentStation.city;
 playBtn.innerHTML=isPlaying?'\u{23F8}\u{FE0F}':'\u25B6';
 playBtn.className=isPlaying?'playing':'';
-const initial=currentStation.name.charAt(0).toUpperCase();
-const ci=currentStation.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%colors.length;
-const domain=currentStation.url.replace(/https?:\/\//,'').split('/')[0].split(':')[0];
-playerLogo.style.background=colors[ci];
-playerLogo.innerHTML=`<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=40" alt="" onerror="this.style.display='none';this.parentElement.textContent='${initial}'" loading="lazy">`;
 }else{
-bottomTitle.textContent='Pilih radio';
-bottomMeta.textContent='';
+displayLabel.textContent='Now Playing';
+displayName.textContent='Pilih Radio';
+displayMeta.textContent='';
 playBtn.innerHTML='\u25B6';
 playBtn.className='';
-playerLogo.style.background='#21262d';
-playerLogo.textContent='';
 }
 }
 
@@ -481,13 +495,11 @@ if(editIndex===undefined)checkStation(customStations[customStations.length-1]);
 };
 document.getElementById('searchInput').oninput=function(){searchQuery=this.value;if(searchQuery){getCities().forEach(([city])=>expandedCities.add(city))}renderStations()};
 playBtn.onclick=()=>{if(!currentStation)return;if(player.paused){player.play()}else{player.pause()}};
-player.onplay=()=>{isPlaying=true;updateBottom()};
-player.onpause=()=>{isPlaying=false;updateBottom()};
-player.onerror=()=>{if(currentStation){statusMap.set(currentStation.url,'inactive');renderStations()}bottomMeta.textContent='Gagal memuat stream';isPlaying=false;updateBottom()};
-volSlider.oninput=function(){player.volume=parseFloat(this.value)};
-player.volume=0.8;
+player.onplay=()=>{isPlaying=true;updateDisplay()};
+player.onpause=()=>{isPlaying=false;updateDisplay()};
+player.onerror=()=>{if(currentStation){statusMap.set(currentStation.url,'inactive');renderStations()}displayMeta.textContent='Gagal memuat stream';isPlaying=false;updateDisplay()};
 
-load();renderStations();updateBottom();checkAllStations();
+load();renderStations();updateDisplay();checkAllStations();
 setInterval(checkAllStations,300000);
 
 (function(){
