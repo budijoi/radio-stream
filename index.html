@@ -438,17 +438,18 @@ c.querySelectorAll('.remove').forEach(el=>{el.onclick=function(e){e.stopPropagat
 
 function playStation(s){
 currentStation=s;
+stopMetadata();
 player.src=s.url;
 player.play().catch(()=>{statusMap.set(s.url,'inactive');renderStations()});
 updateDisplay();
 renderStations();
+setTimeout(()=>fetchMetadata(s.url),2000);
 }
 
 function updateDisplay(){
 if(currentStation){
 displayLabel.textContent='Now Playing';
 displayName.textContent=currentStation.name;
-displayMeta.textContent=currentStation.city;
 playBtn.innerHTML=isPlaying?'\u{23F8}\u{FE0F}':'\u25B6';
 playBtn.className=isPlaying?'playing':'';
 }else{
@@ -460,8 +461,47 @@ playBtn.className='';
 }
 }
 
-function save(){localStorage.setItem('radioCustom',JSON.stringify(customStations))}
-function load(){try{const d=localStorage.getItem('radioCustom');if(d)customStations=JSON.parse(d)}catch(e){}}
+// === Metadata ===
+let metadataController=null;
+let metadataTimer=null;
+
+function fetchMetadata(url){
+if(metadataController)metadataController.abort();
+metadataController=new AbortController();
+const c=metadataController;
+setTimeout(()=>c.abort(),10000);
+fetch(url,{headers:{'Icy-MetaData':'1'},signal:c.signal})
+.then(async r=>{
+const metaint=parseInt(r.headers.get('icy-metaint'));
+if(!metaint)return;
+const reader=r.body.getReader();
+let buf=new Uint8Array(0);
+const need=metaint+4096;
+while(buf.length<need){
+const{done,value}=await reader.read();
+if(done)break;
+const t=new Uint8Array(buf.length+value.length);
+t.set(buf);t.set(value,buf.length);buf=t;
+}
+reader.cancel();
+if(buf.length<=metaint)return;
+const ml=buf[metaint]*16;
+if(ml<=0)return;
+const s=new TextDecoder().decode(buf.slice(metaint+1,metaint+1+ml));
+const m=s.match(/StreamTitle='([^']*)'/);
+if(m&&m[1])displayMeta.textContent=m[1];
+})
+.catch(()=>{});
+}
+
+function stopMetadata(){
+if(metadataController){metadataController.abort();metadataController=null}
+if(metadataTimer){clearInterval(metadataTimer);metadataTimer=null}
+displayMeta.textContent=currentStation?currentStation.city:'';
+}
+
+player.onerror=()=>{if(currentStation){statusMap.set(currentStation.url,'inactive');renderStations()}stopMetadata();displayMeta.textContent='Gagal memuat stream';isPlaying=false;updateDisplay()};
+player.onplay=()=>{isPlaying=true;if(currentStation){displayMeta.textContent=currentStation.city;fetchMetadata(currentStation.url);metadataTimer=setInterval(()=>fetchMetadata(currentStation.url),15000)}updateDisplay()};
 
 document.getElementById('addToggle').onclick=()=>{const f=document.getElementById('addForm');f.classList.toggle('show');if(!f.classList.contains('show')){document.getElementById('addBtn').textContent='Tambah';delete document.getElementById('addBtn').dataset.editIndex;delete document.getElementById('addBtn').dataset.editType;document.getElementById('urlInput').value='';document.getElementById('nameInput').value='';document.getElementById('cityInput').value=''}};
 document.getElementById('addBtn').onclick=()=>{
@@ -495,9 +535,10 @@ if(editIndex===undefined)checkStation(customStations[customStations.length-1]);
 };
 document.getElementById('searchInput').oninput=function(){searchQuery=this.value;if(searchQuery){getCities().forEach(([city])=>expandedCities.add(city))}renderStations()};
 playBtn.onclick=()=>{if(!currentStation)return;if(player.paused){player.play()}else{player.pause()}};
-player.onplay=()=>{isPlaying=true;updateDisplay()};
 player.onpause=()=>{isPlaying=false;updateDisplay()};
-player.onerror=()=>{if(currentStation){statusMap.set(currentStation.url,'inactive');renderStations()}displayMeta.textContent='Gagal memuat stream';isPlaying=false;updateDisplay()};
+
+function save(){localStorage.setItem('radioCustom',JSON.stringify(customStations))}
+function load(){try{const d=localStorage.getItem('radioCustom');if(d)customStations=JSON.parse(d)}catch(e){}}
 
 load();renderStations();updateDisplay();checkAllStations();
 setInterval(checkAllStations,300000);
